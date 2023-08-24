@@ -11,25 +11,61 @@ public:
     vector<vector<int>> fourSum(vector<int> &nums, int target)
     {
         vector<vector<int>> quadruplets;
-        typedef pair<int, int> Wkij;
-        unordered_map<int, Wkij> map;
+        int length = nums.size();
+        if (length < 4)
+            return quadruplets;
         sort(nums.begin(), nums.end());
-        int n = nums.size();
-        for (int i = 0; i < n; i++)
-            for (int j = i + 1; j < n; j++)
-                map[nums[i] + nums[j]] = {i, j};
-        for (auto it = map.begin(); it != map.end(); it++)
+        for (int i = 0; i < length - 3; i++)
         {
-            if (map.count(target - it->first) != 0)
+            if (i > 0 && nums[i] == nums[i - 1])
             {
-                auto jt = map.find(target - it->first);
-                Wkij itW = it->second, jtW = jt->second;
-                int i = itW.first;
-                int j = itW.second;
-                int left = jtW.first;
-                int right = jtW.second;
-                if (i < left)
-                    quadruplets.push_back({nums[i], nums[j], nums[left], nums[right]});
+                continue;
+            }
+            if ((long)nums[i] + nums[i + 1] + nums[i + 2] + nums[i + 3] > target)
+            {
+                break;
+            }
+            if ((long)nums[i] + nums[length - 3] + nums[length - 2] + nums[length - 1] < target)
+            {
+                continue;
+            }
+            for (int j = i + 1; j < length - 2; j++)
+            {
+                if (nums[j] == nums[j - 1])
+                {
+                    continue;
+                }
+                if ((long)nums[i] + nums[j] + nums[j + 1] + nums[j + 2] > target)
+                {
+                    break;
+                }
+                if ((long)nums[i] + nums[j] + nums[length - 2] + nums[length - 1] < target)
+                {
+                    continue;
+                }
+                int left = j + 1, right = length - 1;
+                while (left < right)
+                {
+                    long sum = (long)nums[i] + nums[j] + nums[left] + nums[right];
+                    if (sum == target)
+                    {
+                        quadruplets.push_back({nums[i], nums[j], nums[left], nums[right]});
+                        while (nums[left] == nums[left + 1] && left < right)
+                        {
+                            left++;
+                        }
+                        left++;
+                        while (nums[right] == nums[right - 1] && left < right)
+                        {
+                            right--;
+                        }
+                        right--;
+                    }
+                    else if (sum < target)
+                        left++;
+                    else
+                        right--;
+                }
             }
         }
         return quadruplets;
